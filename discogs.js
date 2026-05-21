@@ -12,12 +12,14 @@ style.innerHTML = `
   border-radius:18px;
   box-shadow:0 20px 60px rgba(0,0,0,.45);
   text-align:center;
+  box-sizing:border-box;
 }
 
-#dr-public-app h1{
-  margin:0 0 8px;
-  font-size:32px;
-  letter-spacing:-1px;
+#dr-public-logo{
+  width:100%;
+  max-width:360px;
+  display:block;
+  margin:0 auto 18px;
 }
 
 #dr-public-app p{
@@ -122,7 +124,13 @@ document.head.appendChild(style);
 
 document.getElementById("discogs-roulette-public").innerHTML = `
 <div id="dr-public-app">
-  <h1>Discogs Roulette</h1>
+
+  <img
+    id="dr-public-logo"
+    src="https://raw.githubusercontent.com/nirvz515/discos-roulette/main/logo.png?v=50"
+    alt="Escolhe o disco ai!"
+  >
+
   <p>Digite um usuário público do Discogs e sorteie um disco da coleção.</p>
 
   <input id="dr-username" placeholder="usuário do Discogs">
