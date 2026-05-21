@@ -18,7 +18,7 @@ style.innerHTML = `
 
 #dr-public-logo{
   width:100%;
-  max-width:360px;
+  max-width:440px;
   display:block;
   margin:0 auto 20px;
 }
@@ -132,13 +132,18 @@ document.getElementById("discogs-roulette-public").innerHTML = `
 
   <img
     id="dr-public-logo"
-    src="https://raw.githubusercontent.com/nirvz515/discos-roulette/refs/heads/main/logo.png?v=999999"
+    src="https://raw.githubusercontent.com/nirvz515/discos-roulette/refs/heads/main/logo2.png?v=999999"
     alt="Escolhe o disco ai!"
   >
 
-  <p>Digite um usuário público do Discogs e sorteie um disco da coleção.</p>
+  <p>
+    Digite um usuário público do Discogs e sorteie um disco da coleção.
+  </p>
 
-  <input id="dr-username" placeholder="usuário do Discogs">
+  <input
+    id="dr-username"
+    placeholder="usuário do Discogs"
+  >
 
   <button class="dr-button" id="dr-random">
     Sortear disco
@@ -148,7 +153,9 @@ document.getElementById("discogs-roulette-public").innerHTML = `
     Zerar histórico
   </button>
 
-  <div id="dr-status">Nenhuma coleção conectada.</div>
+  <div id="dr-status">
+    Nenhuma coleção conectada.
+  </div>
 
   <img id="dr-cover">
 
@@ -194,18 +201,20 @@ function atualizarHistorico(){
 }
 
 async function carregarColecao(){
+
   discos = [];
 
   var page = 1;
   var totalPages = 1;
 
   while(page <= totalPages){
+
     var url =
-      "https://api.discogs.com/users/" +
-      USERNAME +
-      "/collection/folders/0/releases?page=" +
-      page +
-      "&per_page=100";
+    "https://api.discogs.com/users/" +
+    USERNAME +
+    "/collection/folders/0/releases?page=" +
+    page +
+    "&per_page=100";
 
     var resposta = await fetch(url);
     var dados = await resposta.json();
@@ -215,48 +224,77 @@ async function carregarColecao(){
     }
 
     discos = discos.concat(dados.releases);
+
     totalPages = dados.pagination.pages;
+
     page++;
   }
 }
 
 document.getElementById("dr-random").onclick = async function(){
-  var novoUsuario = document.getElementById("dr-username").value.trim();
+
+  var novoUsuario =
+  document.getElementById("dr-username").value.trim();
 
   if(!novoUsuario){
-    document.getElementById("dr-status").textContent = "Digite um usuário do Discogs.";
+
+    document.getElementById("dr-status").textContent =
+    "Digite um usuário do Discogs.";
+
     return;
   }
 
   try{
+
     if(novoUsuario !== USERNAME){
+
       USERNAME = novoUsuario;
+
       discos = [];
       sorteados = [];
       historico = [];
+
       salvar();
       atualizarHistorico();
     }
 
     if(discos.length === 0){
-      document.getElementById("dr-status").textContent = "Carregando coleção...";
+
+      document.getElementById("dr-status").textContent =
+      "Carregando coleção...";
+
       await carregarColecao();
     }
 
-    var disponiveis = discos.filter(function(d){
+    var disponiveis =
+    discos.filter(function(d){
+
       return sorteados.indexOf(d.id) === -1;
+
     });
 
     if(disponiveis.length === 0){
+
       sorteados = [];
+
       disponiveis = discos.slice();
     }
 
-    var escolhido = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    var escolhido =
+    disponiveis[
+      Math.floor(
+        Math.random() *
+        disponiveis.length
+      )
+    ];
+
     var info = escolhido.basic_information;
 
-    var artista = info.artists.map(function(a){
+    var artista =
+    info.artists.map(function(a){
+
       return a.name.replace(" (2)", "");
+
     }).join(", ");
 
     var titulo = info.title;
@@ -268,38 +306,57 @@ document.getElementById("dr-random").onclick = async function(){
     document.getElementById("dr-year").textContent = ano;
 
     var img = document.getElementById("dr-cover");
+
     if(capa){
+
       img.src = capa;
       img.style.display = "block";
     }
 
-    var busca = encodeURIComponent(artista + " " + titulo + " album");
-    document.getElementById("dr-youtube").innerHTML =
-      '<a target="_blank" href="https://www.youtube.com/results?search_query=' +
-      busca +
-      '">Ouvir no YouTube</a>';
+    var busca =
+    encodeURIComponent(
+      artista + " " + titulo + " album"
+    );
 
-    var texto = artista + " - " + titulo + " (" + ano + ")";
+    document.getElementById("dr-youtube").innerHTML =
+    '<a target="_blank" href="https://www.youtube.com/results?search_query=' +
+    busca +
+    '">Ouvir no YouTube</a>';
+
+    var texto =
+    artista + " - " + titulo + " (" + ano + ")";
 
     sorteados.push(escolhido.id);
+
     historico.push(texto);
+
     salvar();
+
     atualizarHistorico();
 
     document.getElementById("dr-status").textContent =
-      "Faltam " + (discos.length - sorteados.length) + " discos.";
+    "Faltam " +
+    (discos.length - sorteados.length) +
+    " discos.";
 
   }catch(err){
-    document.getElementById("dr-status").textContent = err.message;
+
+    document.getElementById("dr-status").textContent =
+    err.message;
   }
 };
 
 document.getElementById("dr-reset").onclick = function(){
+
   sorteados = [];
   historico = [];
+
   salvar();
+
   atualizarHistorico();
-  document.getElementById("dr-status").textContent = "Histórico zerado.";
+
+  document.getElementById("dr-status").textContent =
+  "Histórico zerado.";
 };
 
 atualizarHistorico();
