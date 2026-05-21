@@ -1,7 +1,9 @@
 var style = document.createElement("style");
 
 style.innerHTML = `
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 #dr-public-app{
   width:100%;
@@ -18,9 +20,9 @@ style.innerHTML = `
 
 #dr-public-logo{
   width:100%;
-  max-width:440px;
+  max-width:360px;
   display:block;
-  margin:0 auto 20px;
+  margin:0 auto 12px;
 }
 
 #dr-public-app p{
@@ -132,7 +134,7 @@ document.getElementById("discogs-roulette-public").innerHTML = `
 
   <img
     id="dr-public-logo"
-    src="https://raw.githubusercontent.com/nirvz515/discos-roulette/refs/heads/main/logo2.png?v=999999"
+    src="https://cdn.jsdelivr.net/gh/nirvz515/discos-roulette@main/logo2.png?v=999999"
     alt="Escolhe o disco ai!"
   >
 
@@ -173,31 +175,76 @@ document.getElementById("discogs-roulette-public").innerHTML = `
 </div>
 `;
 
-var USERNAME = localStorage.getItem("dr_public_username") || "";
+var USERNAME =
+localStorage.getItem("dr_public_username") || "";
+
 var discos = [];
-var sorteados = JSON.parse(localStorage.getItem("dr_public_sorteados") || "[]");
-var historico = JSON.parse(localStorage.getItem("dr_public_historico") || "[]");
+
+var sorteados =
+JSON.parse(
+localStorage.getItem("dr_public_sorteados") || "[]"
+);
+
+var historico =
+JSON.parse(
+localStorage.getItem("dr_public_historico") || "[]"
+);
 
 if(USERNAME){
-  document.getElementById("dr-username").value = USERNAME;
-  document.getElementById("dr-status").textContent = "Usuário salvo: " + USERNAME;
+
+  document.getElementById(
+    "dr-username"
+  ).value = USERNAME;
+
+  document.getElementById(
+    "dr-status"
+  ).textContent =
+  "Usuário salvo: " + USERNAME;
+
 }
 
 function salvar(){
-  localStorage.setItem("dr_public_username", USERNAME);
-  localStorage.setItem("dr_public_sorteados", JSON.stringify(sorteados));
-  localStorage.setItem("dr_public_historico", JSON.stringify(historico));
+
+  localStorage.setItem(
+    "dr_public_username",
+    USERNAME
+  );
+
+  localStorage.setItem(
+    "dr_public_sorteados",
+    JSON.stringify(sorteados)
+  );
+
+  localStorage.setItem(
+    "dr_public_historico",
+    JSON.stringify(historico)
+  );
+
 }
 
 function atualizarHistorico(){
-  var lista = document.getElementById("dr-history-list");
+
+  var lista =
+  document.getElementById(
+    "dr-history-list"
+  );
+
   lista.innerHTML = "";
 
-  historico.slice().reverse().forEach(function(item){
-    var li = document.createElement("li");
+  historico
+  .slice()
+  .reverse()
+  .forEach(function(item){
+
+    var li =
+    document.createElement("li");
+
     li.textContent = item;
+
     lista.appendChild(li);
+
   });
+
 }
 
 async function carregarColecao(){
@@ -216,29 +263,46 @@ async function carregarColecao(){
     page +
     "&per_page=100";
 
-    var resposta = await fetch(url);
-    var dados = await resposta.json();
+    var resposta =
+    await fetch(url);
+
+    var dados =
+    await resposta.json();
 
     if(!dados.releases){
-      throw new Error("Coleção privada ou usuário inválido.");
+
+      throw new Error(
+      "Coleção privada ou usuário inválido."
+      );
+
     }
 
-    discos = discos.concat(dados.releases);
+    discos =
+    discos.concat(dados.releases);
 
-    totalPages = dados.pagination.pages;
+    totalPages =
+    dados.pagination.pages;
 
     page++;
+
   }
+
 }
 
-document.getElementById("dr-random").onclick = async function(){
+document.getElementById(
+  "dr-random"
+).onclick = async function(){
 
   var novoUsuario =
-  document.getElementById("dr-username").value.trim();
+  document.getElementById(
+    "dr-username"
+  ).value.trim();
 
   if(!novoUsuario){
 
-    document.getElementById("dr-status").textContent =
+    document.getElementById(
+      "dr-status"
+    ).textContent =
     "Digite um usuário do Discogs.";
 
     return;
@@ -255,15 +319,19 @@ document.getElementById("dr-random").onclick = async function(){
       historico = [];
 
       salvar();
+
       atualizarHistorico();
     }
 
     if(discos.length === 0){
 
-      document.getElementById("dr-status").textContent =
+      document.getElementById(
+        "dr-status"
+      ).textContent =
       "Carregando coleção...";
 
       await carregarColecao();
+
     }
 
     var disponiveis =
@@ -277,7 +345,9 @@ document.getElementById("dr-random").onclick = async function(){
 
       sorteados = [];
 
-      disponiveis = discos.slice();
+      disponiveis =
+      discos.slice();
+
     }
 
     var escolhido =
@@ -288,7 +358,8 @@ document.getElementById("dr-random").onclick = async function(){
       )
     ];
 
-    var info = escolhido.basic_information;
+    var info =
+    escolhido.basic_information;
 
     var artista =
     info.artists.map(function(a){
@@ -297,56 +368,96 @@ document.getElementById("dr-random").onclick = async function(){
 
     }).join(", ");
 
-    var titulo = info.title;
-    var ano = info.year || "Ano desconhecido";
-    var capa = info.cover_image || "";
+    var titulo =
+    info.title;
 
-    document.getElementById("dr-artist").textContent = artista;
-    document.getElementById("dr-title").textContent = titulo;
-    document.getElementById("dr-year").textContent = ano;
+    var ano =
+    info.year || "Ano desconhecido";
 
-    var img = document.getElementById("dr-cover");
+    var capa =
+    info.cover_image || "";
+
+    document.getElementById(
+      "dr-artist"
+    ).textContent = artista;
+
+    document.getElementById(
+      "dr-title"
+    ).textContent = titulo;
+
+    document.getElementById(
+      "dr-year"
+    ).textContent = ano;
+
+    var img =
+    document.getElementById(
+      "dr-cover"
+    );
 
     if(capa){
 
       img.src = capa;
+
       img.style.display = "block";
+
     }
 
     var busca =
     encodeURIComponent(
-      artista + " " + titulo + " album"
+      artista +
+      " " +
+      titulo +
+      " album"
     );
 
-    document.getElementById("dr-youtube").innerHTML =
+    document.getElementById(
+      "dr-youtube"
+    ).innerHTML =
     '<a target="_blank" href="https://www.youtube.com/results?search_query=' +
     busca +
     '">Ouvir no YouTube</a>';
 
     var texto =
-    artista + " - " + titulo + " (" + ano + ")";
+    artista +
+    " - " +
+    titulo +
+    " (" +
+    ano +
+    ")";
 
-    sorteados.push(escolhido.id);
+    sorteados.push(
+      escolhido.id
+    );
 
-    historico.push(texto);
+    historico.push(
+      texto
+    );
 
     salvar();
 
     atualizarHistorico();
 
-    document.getElementById("dr-status").textContent =
+    document.getElementById(
+      "dr-status"
+    ).textContent =
     "Faltam " +
     (discos.length - sorteados.length) +
     " discos.";
 
   }catch(err){
 
-    document.getElementById("dr-status").textContent =
+    document.getElementById(
+      "dr-status"
+    ).textContent =
     err.message;
+
   }
+
 };
 
-document.getElementById("dr-reset").onclick = function(){
+document.getElementById(
+  "dr-reset"
+).onclick = function(){
 
   sorteados = [];
   historico = [];
@@ -355,8 +466,11 @@ document.getElementById("dr-reset").onclick = function(){
 
   atualizarHistorico();
 
-  document.getElementById("dr-status").textContent =
+  document.getElementById(
+    "dr-status"
+  ).textContent =
   "Histórico zerado.";
+
 };
 
 atualizarHistorico();
